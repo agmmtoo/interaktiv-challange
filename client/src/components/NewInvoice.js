@@ -27,12 +27,22 @@ export default function NewInvoice() {
         date: new Date().toISOString(),
     });
 
+    // handle form input changes
     const handleInputChange = (e) => setValues({ ...values, [e.target.name]: e.target.value });
+
+    // handle form submit
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log({ ...values, selectedProduct });
+    }
 
     return (
         <div className='w-full p-4 text-slate-900'>
             <h2 className='font-medium uppercase text-slate-500'>New Invoice</h2>
-            <form className='flex flex-col gap-4 p-4 text-sm'>
+            <form
+                onSubmit={handleSubmit}
+                className='flex flex-col gap-4 p-4 text-sm'
+            >
                 <label>
                     <span className='text-sm uppercase text-slate-500'>Customer Name</span>
                     <input
@@ -43,6 +53,39 @@ export default function NewInvoice() {
                         onChange={handleInputChange}
                         className='w-full p-2 leading-none border border-slate-300 rounded' />
                 </label>
+
+                <Combobox
+                    value={selectedProduct}
+                    onChange={setSelectedProduct}
+                >
+                    <div className='relative'>
+                        <label>
+                            <span className='text-sm uppercase text-slate-500'>Product</span>
+                            <Combobox.Input
+                                onChange={(e) => setQuery(e.target.value)}
+                                displayValue={(product) => product.name}
+                                className='w-full p-2 leading-none border border-slate-300 rounded'
+                            />
+                        </label>
+                        <Combobox.Options className='absolute'>
+                            {filteredProducts.map((product) => (
+                                <Combobox.Option
+                                    key={product.id}
+                                    value={product}
+                                >
+                                    {/* {product.name} */}
+
+                                    <div className='flex justify-between items-center bg-green-300'>
+                                        <div>{product.name}</div>
+                                        <div>{product.price}</div>
+                                        <div>{product.stock}</div>
+                                        <img src={product.picture} alt={product.name} className='w-20' />
+                                    </div>
+                                </Combobox.Option>
+                            ))}
+                        </Combobox.Options>
+                    </div>
+                </Combobox>
 
                 <label>
                     <span className='text-sm uppercase text-slate-500'>Salesperson Name</span>
@@ -68,36 +111,21 @@ export default function NewInvoice() {
                     />
                 </label>
 
-                <Combobox
-                    value={selectedProduct}
-                    onChange={setSelectedProduct}
-                >
-                    <label>
-                        <span className='text-sm uppercase text-slate-500'>Product</span>
-                        <Combobox.Input
-                            onChange={(e) => setQuery(e.target.value)}
-                            displayValue={(product) => product.name}
-                            className='w-full p-2 leading-none border border-slate-300 rounded'
-                        />
-                    </label>
-                    <Combobox.Options className=''>
-                        {filteredProducts.map((product) => (
-                            <Combobox.Option
-                                key={product.id}
-                                value={product}
-                            >
-                                {/* {product.name} */}
+                <label>
+                    <span className='text-sm uppercase text-slate-500'>Notes</span>
+                    <textarea
+                        name='notes'
+                        rows='4'
+                        className='w-full p-2 leading-none border border-slate-300 rounded'
+                    />
+                </label>
 
-                                <div className='flex justify-between items-center bg-green-300'>
-                                    <div>{product.name}</div>
-                                    <div>{product.price}</div>
-                                    <div>{product.stock}</div>
-                                    <img src={product.picture} alt={product.name} className='w-20' />
-                                </div>
-                            </Combobox.Option>
-                        ))}
-                    </Combobox.Options>
-                </Combobox>
+                <button
+                    type='submit'
+                    className='w-full p-2 text-white bg-green-500 hover:bg-green-400 border border-green-600 rounded transition-colors uppercase font-medium'
+                >
+                    Submit
+                </button>
             </form>
         </div>
     );

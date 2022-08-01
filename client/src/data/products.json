@@ -7,14 +7,14 @@
         "picture": "https://img.freepik.com/free-photo/living-room-interior-wall-mockup-warm-tones-with-pink-armchair-minimal-design-3d-rendering_41470-4171.jpg"
     },
     {
-        "id": 101,
+        "id": 200,
         "name": "Product 2",
         "price": 200,
         "stock": 2000,
         "picture": "https://img.freepik.com/free-photo/white-box_74190-267.jpg"
     },
     {
-        "id": 102,
+        "id": 300,
         "name": "Product 3",
         "price": 300,
         "stock": 3000,

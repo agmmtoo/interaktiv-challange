@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 // api
 import { getInvoice } from '../api/invoice-apis';
 
+// local hardcoded data
+import products from '../data/products.json';
+
 export default function Invoice() {
     const { invoiceId } = useParams();
 
@@ -31,8 +34,24 @@ export default function Invoice() {
                     <div className=''>{data.salesperson}</div>
                 </div>
             </div>
+            <table className='border w-full bg-slate-100'>
+                <thead>
+                    <tr className='flex justify-between items-center text-xs font-medium text-slate-500 uppercase'>
+                        <th>Product Name</th>
+                        <th>Product Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {Object.keys(data.products).map((product_key) => (
+                        <tr key={product_key} className='flex justify-between items-center'>
+                            <td>{products.find(product => product.id === Number(product_key))?.name}</td>
+                            <td>x {data.products[product_key]}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <blockquote className='border-l-2 border-l-slate-500 p-4'>
-                <div className='text-sm text-slate-500 font-medium uppercase'>notes</div>
+                <div className='text-xs text-slate-500 font-medium uppercase'>notes</div>
                 {data.notes}
             </blockquote>
         </div>
