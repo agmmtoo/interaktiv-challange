@@ -5,8 +5,8 @@ let headers = {
     "Accept": "application/json",
 }
 
-export async function getInvoiceList({ limit = 10, page = 1 }) {
-    let URI = `${INVOICES}/?limit=${limit}&page=${page}`;
+export async function getInvoiceList({ limit = 100, page }) {
+    let URI = `${INVOICES}/?limit=${limit}${page ? '$page=' + page : ''}`;
     let CONFIG = {
         method: "GET",
         headers
