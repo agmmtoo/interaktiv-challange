@@ -2,9 +2,13 @@ import { useState } from 'react';
 import { Combobox } from '@headlessui/react';
 
 // local hardcoded data
-import products from '../data/products.json';
+// import products from '../data/products.json';
+// redux
+import { useSelector } from 'react-redux';
+import { selectProduct } from '../features/product/productSlice';
 
 export default function NewInvoice() {
+    const products = useSelector(selectProduct);
 
     // combobox
     const [selectedProduct, setSelectedProduct] = useState(products[0]);
@@ -67,7 +71,7 @@ export default function NewInvoice() {
                                 className='w-full p-2 leading-none border border-slate-300 rounded'
                             />
                         </label>
-                        <Combobox.Options className='absolute'>
+                        <Combobox.Options className='absolute max-h-60 w-full overflow-y-scroll mt-2 shadow rounded'>
                             {filteredProducts.map((product) => (
                                 <Combobox.Option
                                     key={product.id}
@@ -75,11 +79,15 @@ export default function NewInvoice() {
                                 >
                                     {/* {product.name} */}
 
-                                    <div className='flex justify-between items-center bg-green-300'>
-                                        <div>{product.name}</div>
-                                        <div>{product.price}</div>
-                                        <div>{product.stock}</div>
-                                        <img src={product.picture} alt={product.name} className='w-20' />
+                                    <div className='flex gap-4 justify-between items-center bg-slate-200 border-slate-700 p-2 cursor-pointer'>
+                                        <div className='w-full space-y-2'>
+                                            <div>{product.name}</div>
+                                            <div className='flex items-center justify-between text-slate-500'>
+                                                <div>$ {product.price}</div>
+                                                <div>x {product.stock}</div>
+                                            </div>
+                                        </div>
+                                        <img src={product.picture} alt={product.name} className='w-20 rounded' loading='lazy' />
                                     </div>
                                 </Combobox.Option>
                             ))}

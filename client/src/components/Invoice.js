@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+// redux
+import { useSelector } from 'react-redux';
+import { selectProduct } from '../features/product/productSlice';
+
 // api
 import { getInvoice } from '../api/invoice-apis';
 
 // local hardcoded data
-import products from '../data/products.json';
+// import products from '../data/products.json';
 
 export default function Invoice() {
+
+    const products = useSelector(selectProduct);
+
     const { invoiceId } = useParams();
 
     const [data, setData] = useState();
