@@ -1,13 +1,28 @@
 import { useState } from 'react';
 import { Combobox } from '@headlessui/react';
+import { useNotifications } from 'reapop';
+import { useNavigate } from 'react-router-dom';
 
-// local hardcoded data
-import products from '../data/products.json';
+// redux
+import { useSelector, useDispatch } from 'react-redux';
+import { selectProduct } from '../features/product/productSlice';
+import { fetchInvoiceListAsync } from '../features/invoice/invoiceSlice';
+
+// api
+import { createInvoice } from '../api/invoice-apis';
 
 export default function NewInvoice() {
+    // notification hook
+    const { notify } = useNotifications();
+
+    // navigate hook
+    const navigate = useNavigate();
+
+    // reduct hook
+    const products = useSelector(selectProduct);
 
     // combobox
-    const [selectedProduct, setSelectedProduct] = useState(products[0]);
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const [query, setQuery] = useState('');
 
     const filteredProducts =
@@ -30,10 +45,41 @@ export default function NewInvoice() {
     // handle form input changes
     const handleInputChange = (e) => setValues({ ...values, [e.target.name]: e.target.value });
 
+    // redux
+    const dispatch = useDispatch();
+
     // handle form submit
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log({ ...values, selectedProduct });
+
+        // convert selected products to server format
+        // format: { product_id: product_count, ... }
+        const products = selectedProducts.reduce((accu, product) => ({ ...accu, [product.id]: 1 }), {})
+        // console.log({ ...values, products });
+        createInvoice({ ...values, products })
+            .then((res) => {
+                notify({
+                    title: 'Success',
+                    message: res.message,
+                    status: 'success',
+                    dismissible: true,
+                    dismissAfter: 3000,
+                });
+                // chain
+                return res;
+            })
+            .then((res) => navigate(`../${res.invoice._id}`))
+            // run redux action to update invoice list
+            .then(() => dispatch(fetchInvoiceListAsync({})))
+            .catch((err) => {
+                notify({
+                    title: 'Error',
+                    message: err?.message || 'failed to create invoice',
+                    status: 'error',
+                    dismissible: true,
+                    dismissAfter: 3000,
+                });
+            });
     }
 
     return (
@@ -55,8 +101,9 @@ export default function NewInvoice() {
                 </label>
 
                 <Combobox
-                    value={selectedProduct}
-                    onChange={setSelectedProduct}
+                    multiple
+                    value={selectedProducts}
+                    onChange={setSelectedProducts}
                 >
                     <div className='relative'>
                         <label>
@@ -66,20 +113,28 @@ export default function NewInvoice() {
                                 displayValue={(product) => product.name}
                                 className='w-full p-2 leading-none border border-slate-300 rounded'
                             />
+                            {selectedProducts.length > 0 && (
+                                <ul className='bg-slate-100 border-l-2 border-slate-400 p-2'>
+                                    {selectedProducts.map((product) => (
+                                        <li key={product.id}>{product.name}</li>
+                                    ))}
+                                </ul>)}
                         </label>
-                        <Combobox.Options className='absolute'>
+                        <Combobox.Options className='absolute max-h-60 w-full overflow-y-scroll mt-2 shadow rounded border border-slate-300'>
                             {filteredProducts.map((product) => (
                                 <Combobox.Option
                                     key={product.id}
                                     value={product}
                                 >
-                                    {/* {product.name} */}
-
-                                    <div className='flex justify-between items-center bg-green-300'>
-                                        <div>{product.name}</div>
-                                        <div>{product.price}</div>
-                                        <div>{product.stock}</div>
-                                        <img src={product.picture} alt={product.name} className='w-20' />
+                                    <div className={`flex gap-4 justify-between items-center bg-slate-100 p-2 cursor-pointer ${selectedProducts.map(p => p.id).includes(product.id) ? ' bg-slate-200' : ''}`}>
+                                        <div className='w-full space-y-2'>
+                                            <div>{product.name}</div>
+                                            <div className='flex items-center justify-between text-slate-500'>
+                                                <div>$ {product.price}</div>
+                                                <div>x {product.stock}</div>
+                                            </div>
+                                        </div>
+                                        <img src={product.picture} alt={product.name} className='w-20 rounded' loading='lazy' />
                                     </div>
                                 </Combobox.Option>
                             ))}
@@ -116,13 +171,15 @@ export default function NewInvoice() {
                     <textarea
                         name='notes'
                         rows='4'
+                        onChange={handleInputChange}
                         className='w-full p-2 leading-none border border-slate-300 rounded'
                     />
                 </label>
 
                 <button
+                    disabled={!selectedProducts.length}
                     type='submit'
-                    className='w-full p-2 text-white bg-green-500 hover:bg-green-400 border border-green-600 rounded transition-colors uppercase font-medium'
+                    className='w-full p-2 text-white bg-green-500 hover:bg-green-400 disabled:bg-slate-300 rounded transition-colors uppercase font-medium'
                 >
                     Submit
                 </button>

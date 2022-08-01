@@ -1,17 +1,33 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+// redux
+import { useSelector, useDispatch } from 'react-redux';
+import { selectProduct } from '../features/product/productSlice';
+import { fetchInvoiceListAsync, selectInvoice } from '../features/invoice/invoiceSlice';
 
 // api
-import { getInvoiceList } from '../api/invoice-apis';
+// import { getInvoiceList } from '../api/invoice-apis';
 
 export default function Invoices() {
-    const [list, setList] = useState([]);
+    // get products from redux store
+    const products = useSelector(selectProduct);
+
+    // const [list, setList] = useState([]);
+    // useEffect(() => {
+    //     getInvoiceList({})
+    //         .then(setList)
+    //         .catch(console.log)
+    // }, [])
+
+    const dispatch = useDispatch();
+    // fetch products and put into redux store
     useEffect(() => {
-        getInvoiceList({})
-            .then(setList)
-            .catch(console.log)
-    }, [])
+        dispatch(fetchInvoiceListAsync({}));
+    }, [dispatch]);
+
+    const list = useSelector(selectInvoice);
+
     return (
         <div className='w-full p-4 text-slate-900'>
             <div className='flex justify-between items-center'>
@@ -24,7 +40,7 @@ export default function Invoices() {
                 </Link>
             </div>
             <div className='flex flex-col gap-4 p-4'>
-                {list?.list?.map((invoice) => (
+                {list?.map((invoice) => (
                     <Link
                         to={invoice._id}
                         key={invoice._id}
@@ -35,7 +51,8 @@ export default function Invoices() {
                             <div className='text-sm  uppercase text-slate-500'>{new Date(invoice.date).toDateString()}</div>
                         </div>
                         <div className='font-medium'>
-                            $50,500
+                            {/* terriable way to calculate amount */}
+                            ${Object.keys(invoice.products).reduce((total, id) => total + products.find(p => p.id == id).price * invoice.products[id], 0)}
                         </div>
                     </Link>
                 ))}

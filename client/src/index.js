@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import { BrowserRouter } from 'react-router-dom';
+import { NotificationsProvider } from 'reapop';
 import App from './App';
 import './index.css';
 
@@ -13,7 +14,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <NotificationsProvider>
+          <App />
+        </NotificationsProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

@@ -22,5 +22,16 @@ export async function getInvoice({ invoiceId }) {
         headers,
     };
     const res = await fetch(URI, CONFIG);
+    if (res.ok) return res.json();
+}
+
+export async function createInvoice(invoice) {
+    let URI = `${INVOICES}`;
+    let CONFIG = {
+        method: "POST",
+        headers,
+        body: JSON.stringify(invoice)
+    };
+    const res = await fetch(URI, CONFIG);
     return res.json();
 }
