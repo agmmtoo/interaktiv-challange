@@ -6,6 +6,7 @@ import compression from 'compression'
 
 // import routes
 import invoiceRouter from './routes/invoice.router.js';
+import productRouter from './routes/product.router.js';
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(compression());
 
 // routes
 app.use('/api/v1/invoices', invoiceRouter);
+app.use('/api/v1/products', productRouter);
 
 export default app;
