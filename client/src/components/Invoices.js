@@ -6,19 +6,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectProduct } from '../features/product/productSlice';
 import { fetchInvoiceListAsync, selectInvoice } from '../features/invoice/invoiceSlice';
 
-// api
-// import { getInvoiceList } from '../api/invoice-apis';
-
 export default function Invoices() {
     // get products from redux store
     const products = useSelector(selectProduct);
-
-    // const [list, setList] = useState([]);
-    // useEffect(() => {
-    //     getInvoiceList({})
-    //         .then(setList)
-    //         .catch(console.log)
-    // }, [])
 
     const dispatch = useDispatch();
     // fetch products and put into redux store
